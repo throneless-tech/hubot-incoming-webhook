@@ -11,14 +11,25 @@
       let room    = data.room;
       let message = data.message;
 
-      if (typeof room !== 'string' || typeof message === 'undefined') {
+      if (typeof message === 'undefined') {
         res.send(422); return;
       }
-
-      if (typeof message === 'string') {
-        robot.messageRoom(room, message);
-      } else if (message instanceof Array) {
-        message.forEach(line => robot.messageRoom(room, line));
+      if (typeof room === 'string') {
+        if (typeof message === 'string') {
+          robot.messageRoom(room, message);
+        } else if (message instanceof Array) {
+          message.forEach(line => robot.messageRoom(room, line));
+        }
+      } else if (room instanceof Array) {
+        room.forEach(r => {
+          if (typeof message === 'string') {
+            robot.messageRoom(r, message);
+          } else if (message instanceof Array) {
+            message.forEach(line => robot.messageRoom(r, line));
+          }
+        });
+      } else {
+        res.send(422); return;
       }
 
       res.send(200);
